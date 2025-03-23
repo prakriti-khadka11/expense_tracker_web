@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import user_passes_test
-from .models import IndividualExpense, GroupExpense
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
