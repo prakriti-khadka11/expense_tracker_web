@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e8f5e9; /* Light green */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #2e7d32; /* Dark green */
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.5rem; /* Adjusted for larger title */
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .navbar-link {
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .navbar-link:hover {
+            text-decoration: underline;
+            color: black;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 3rem; /* Increased padding for larger form */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px; /* Increased max width for larger form */
+            width: 100%;
+            margin-top: 120px; /* Adjusted margin to account for navbar */
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem; /* Increased space between form elements */
+        }
+
+        .form-group label {
+            font-size: 16px;
+            /* font-weight: bold; */
+            color: black;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1877f2;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px; /* Increased button size */
+            background-color: #388e3c; /* Green button */
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e7d32;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-container h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2e7d32; /* Dark green */
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #2e7d32; /* Dark green */
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div></div> <!-- Empty div to balance the layout -->
+        <div class="navbar-title">Admin Login</div>
+        <div></div> <!-- Empty div to balance the layout -->
+    </nav>
+
+    <div class="login-container">
+        <h3>Admin</h3>
+        {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <div>Copyright © 2024. All rights reserved.</div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
