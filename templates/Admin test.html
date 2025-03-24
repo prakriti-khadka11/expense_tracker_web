@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e8f5e9; /* Light green */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h3{
+            color: #2e7d32;
+        }
+        .navbar {
+            background-color: #2e7d32; /* Dark green */
+            padding: 10px 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .navbar-link {
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .navbar-link:hover {
+            text-decoration: underline;
+            color:black;
+        }
+
+        .register-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin-top: 80px; /* Space below navbar */
+        }
+
+        .register-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2e7d32; /* Dark green */
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #388e3c; /* Green button */
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2e7d32;
+        }
+
+        .text-center a {
+            color: #2e7d32; /* Green links */
+            font-weight: bold;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        }
+
+        /* Footer styling */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #2e7d32; /* Dark green */
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div></div> <!-- Empty div to balance the layout -->
+         <div class="navbar-title">Create an Account to Track Your Expenses</div>
+        <div>
+        </div>
+    </nav>
+
+    <div class="register-container">
+        <h3>Create an Account</h3>
+       {% if messages %}
+       {% for message in messages %}
+        <div class="alert {% if 'error' in message.tags %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                       id="username" name="username" placeholder="Enter your username" required autocomplete="new-username">
+                {% for error in form.username.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password1">Password:</label>
+                <input type="password" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+                       id="password1" name="password1" placeholder="Enter your password" required autocomplete="new-password">
+                {% for error in form.password1.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
+                <label for="password2">Password Confirmation:</label>
+                <input type="password" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+                       id="password2" name="password2" placeholder="Enter the same password again" required autocomplete="new-password">
+                {% for error in form.password2.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        
+        <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+
+    <footer>
+        <div>Copyright © 2024. All rights reserved.</div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
+
