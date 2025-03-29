@@ -155,6 +155,17 @@
             </div>
             
             <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+                       id="email" name="email" placeholder="Enter your email" required>
+                {% for error in form.email.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-group">
                 <label for="password1">Password:</label>
                 <input type="password" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
                        id="password1" name="password1" placeholder="Enter your password" required autocomplete="new-password">
