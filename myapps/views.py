@@ -15,21 +15,21 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 
 
+from .forms import UserRegisterForm 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save() 
             messages.success(request, 'Account created successfully! You can now log in.')
             return redirect('login')
         else:
-            # Display form errors
-            errors = form.errors.as_json()
-            messages.error(request, 'Registration failed.Please correct the errors below.', extra_tags='danger')
+            messages.error(request, 'Registration failed. Please correct the errors below.', extra_tags='danger')
     else:
-        form = UserCreationForm()
-    
+        form = UserRegisterForm()
+
     return render(request, 'register.html', {'form': form})
+
 
 def user_login(request):
     if request.method == 'POST':
@@ -48,5 +48,16 @@ def user_login(request):
 def index(request):
     return render(request, 'index.html')
 
+def admin_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
 
+        if user is not None and user.is_superuser:
+            login(request, user)
+            return redirect("admin_dashboard")
+        else:
+            return render(request, "admin_login.html", {"error": "Invalid credentials or not an admin."})
 
+    return render(request, "admin_login.html")
