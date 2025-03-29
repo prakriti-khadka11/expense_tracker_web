@@ -1,5 +1,3 @@
-from django.shortcuts import render
-
 # Create your views here.
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -61,3 +59,18 @@ def admin_login(request):
             return render(request, "admin_login.html", {"error": "Invalid credentials or not an admin."})
 
     return render(request, "admin_login.html")
+
+# Function to check if user is a superuser
+def is_superuser(user):
+    return user.is_authenticated and user.is_superuser
+
+
+@user_passes_test(is_superuser, login_url='admin_login')  # Restrict non-superusers
+def admin_dashboard(request):
+    users = User.objects.all()
+    context = {
+         'users': users,
+    }
+
+    return render(request, 'admin_dashboard.html', context)
+
