@@ -74,3 +74,7 @@ def admin_dashboard(request):
 
     return render(request, 'admin_dashboard.html', context)
 
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
