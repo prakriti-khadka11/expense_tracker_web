@@ -141,7 +141,34 @@ def user_logout(request):
     logout(request)
     return redirect('login')
 
+@user_passes_test(is_superuser, login_url='admin_login')
+def admin_expense_edit(request, expense_id, is_group):
+    # Convert is_group to a boolean
+    is_group = True if is_group.lower() == 'true' else False
 
+    expense = get_object_or_404(IndividualExpense, id=expense_id)
+
+    # Handle form submission (POST request)
+    if request.method == "POST":
+        expense.name = request.POST.get("name")
+        expense.amount = request.POST.get("amount")
+        expense.date = request.POST.get("date")
+        expense.category = request.POST.get("category")
+        expense.save()
+
+        return redirect('admin_dashboard')  # Redirect to the dashboard after saving
+
+    # Render the edit form with the current expense data if it's a GET request
+    return render(request, 'admin_expense_edit.html', {'expense': expense, 'is_group': is_group})
+
+@user_passes_test(is_superuser, login_url='admin_login')
+def admin_expense_delete(request, expense_id, is_group):
+    # Convert is_group to a boolean
+    is_group = True if is_group.lower() == 'true' else False
+    expense = get_object_or_404(IndividualExpense, id=expense_id)
+
+    expense.delete()
+    return redirect('admin_dashboard')
 
 
 
