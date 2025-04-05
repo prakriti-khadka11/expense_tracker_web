@@ -34,6 +34,8 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-login/', views.admin_login, name='admin_login'),
+    path('reset-password/', views.request_password_reset, name='reset-password'),
+    path('reset-password-/<uidb64>/<token>/', views.reset_password_confirm, name='reset_password_confirm'),
 ]
 
 
