@@ -3,6 +3,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import user_passes_test
+from .models import IndividualExpense
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -23,6 +24,16 @@ from django.contrib import auth
 from .utils import account_activation_token
 
 def register(request):
+    """
+    Handles user registration.
+
+    If the request method is POST, it processes the registration form.
+    If the form is valid, it creates a new user and redirects to the login page.
+    Otherwise, it displays error messages.
+    
+    Returns:
+        HttpResponse: Renders the registration page with the form.
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -36,6 +47,16 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 def user_login(request):
+    """
+    Handles user login.
+
+    If the request method is POST, it authenticates the user based on the provided credentials.
+    If authentication is successful, the user is logged in and redirected to the index page.
+    Otherwise, an error message is displayed.
+
+    Returns:
+        HttpResponse: Renders the login page.
+    """
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -49,9 +70,25 @@ def user_login(request):
     return render(request, 'login.html')
 
 def index(request):
+    """
+    Renders the home page (index).
+
+    Returns:
+        HttpResponse: Renders the index.html template.
+    """
     return render(request, 'index.html')
 
 def admin_login(request):
+    """
+    Handles admin login.
+
+    If the request method is POST, it authenticates the user.
+    If the user is an admin (superuser), they are logged in and redirected to the admin dashboard.
+    Otherwise, an error message is displayed.
+
+    Returns:
+        HttpResponse: Renders the admin login page.
+    """
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -64,13 +101,32 @@ def admin_login(request):
     return render(request, "admin_login.html")
 
 def is_superuser(user):
+    """
+    Checks if the user is a superuser.
+
+    Args:
+        user (User): The user object.
+
+    Returns:
+        bool: True if the user is authenticated and is a superuser, False otherwise.
+    """
     return user.is_authenticated and user.is_superuser
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_dashboard(request):
+    """
+    Displays the admin dashboard.
+
+    Only accessible to superusers. Shows a list of all individual expenses and registered users.
+
+    Returns:
+        HttpResponse: Renders the admin dashboard page with relevant data.
+    """
+    personal_expenses = IndividualExpense.objects.all()
     users = User.objects.all()
     context = {
-         'users': users,
+        'personal_expenses': personal_expenses,
+        'users': users,
     }
     return render(request, 'admin_dashboard.html', context)
 
@@ -139,3 +195,51 @@ def reset_password_confirm(request, uidb64, token):
 
     
     
+
+
+def user_logout(request):
+    """
+    Logs out the user and redirects to the login page.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the login page.
+    """
+    logout(request)
+    return redirect('login')
+
+@user_passes_test(is_superuser, login_url='admin_login')
+def admin_expense_edit(request, expense_id, is_group):
+    # Convert is_group to a boolean
+    is_group = True if is_group.lower() == 'true' else False
+
+    expense = get_object_or_404(IndividualExpense, id=expense_id)
+
+    # Handle form submission (POST request)
+    if request.method == "POST":
+        expense.name = request.POST.get("name")
+        expense.amount = request.POST.get("amount")
+        expense.date = request.POST.get("date")
+        expense.category = request.POST.get("category")
+        expense.save()
+
+        return redirect('admin_dashboard')  # Redirect to the dashboard after saving
+
+    # Render the edit form with the current expense data if it's a GET request
+    return render(request, 'admin_expense_edit.html', {'expense': expense, 'is_group': is_group})
+
+@user_passes_test(is_superuser, login_url='admin_login')
+def admin_expense_delete(request, expense_id, is_group):
+    # Convert is_group to a boolean
+    is_group = True if is_group.lower() == 'true' else False
+    expense = get_object_or_404(IndividualExpense, id=expense_id)
+
+    expense.delete()
+    return redirect('admin_dashboard')
+
+
+
+
+
+
+   
+
