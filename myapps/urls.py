@@ -34,10 +34,15 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-login/', views.admin_login, name='admin_login'),
+ 
+    path('reset-password/', views.request_password_reset, name='reset-password'),
+    path('reset-password-/<uidb64>/<token>/', views.reset_password_confirm, name='reset_password_confirm'),
+
     path('user-logout/', views.user_logout, name='user_logout'),
 
     path('admin-expense/edit/<int:expense_id>/<str:is_group>/', views.admin_expense_edit, name='admin_expense_edit'),
     path('admin-expense/delete/<int:expense_id>/<str:is_group>/', views.admin_expense_delete, name='admin_expense_delete'),
+ 
 ]
 
 
