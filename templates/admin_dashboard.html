@@ -152,6 +152,36 @@ footer {
         </div>
     </nav>
     <div class="container">
+
+        <h3>Personal Expenses</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in personal_expenses %}
+                        <tr>
+                            <td>{{ expense.name }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.date }}</td>
+                            <td>{{ expense.category }}</td>
+                            <td>
+                                <a href="{% url 'admin_expense_edit' expense_id=expense.id is_group='false' %}">Edit</a> |
+                                <a href="{% url 'admin_expense_delete' expense_id=expense.id is_group='false' %}">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
         <h3>Registered Users</h3>
         <div class="table-container">
             <table>
