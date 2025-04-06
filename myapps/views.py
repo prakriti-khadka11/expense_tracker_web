@@ -236,6 +236,37 @@ def admin_expense_delete(request, expense_id, is_group):
     expense.delete()
     return redirect('admin_dashboard')
 
+def add_personal_expense(request):
+    if request.method == "POST":
+        try:
+            # Parse incoming JSON data
+            data = json.loads(request.body)
+            print("Received data:", data)
+
+            # Extract the fields from the incoming data
+            name = data.get('name')
+            amount = data.get('amount')
+            date = data.get('date')
+            category = data.get('category')
+
+            # Create the personal expense in the database
+            expense = IndividualExpense.objects.create(
+                name=name,
+                amount=amount,
+                date=date,
+                category=category,
+            )
+            expense.save()
+
+            # Return a successful response
+            return JsonResponse({'success': True, 'message': 'Personal expense added successfully!'})
+
+        except Exception as e:
+            # Log the error and return an error response
+            print(f"Error: {e}")
+            return JsonResponse({'success': False, 'message': 'Error adding personal expense. Please try again.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 
 

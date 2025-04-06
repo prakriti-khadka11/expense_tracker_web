@@ -194,32 +194,11 @@
             <!-- Group Expenses Section -->
             <section id="group" class="content-section">
                 <h2>Group Expenses</h2>
-               
-
-                <p id="msg" style="display: none;"></p> <!-- Message Container -->
-                <form id="group-expense-form" method="POST">
-                    {% csrf_token %}
-                    <input type="text" name="name" class="form-control" placeholder="Expense Name" required>
-                    <input type="number" name="amount" class="form-control" placeholder="Amount" required>
-                    <input type="date" name="date" class="form-control" required>
-                    <input type="text" name="category" class="form-control" placeholder="Category" required>
-                    <textarea name="members" class="form-control" placeholder="Enter member names, separated by commas" required></textarea>
-                    <button type="submit" class="btn btn-primary mt-2">Add Group Expense</button>
-                </form>
-                
-                
+                <p id="msg" style="display: none;"></p> <!-- Message Container -->     
             </section>
-
             <!-- Summary Section -->
             <section id="summary" class="content-section">
                 <h2>Expense Summary</h2>
-                <form id="expense-form" class="expense-form">
-                    <input type="text" class="form-control" id="user-name" placeholder="Enter your name" required>
-                    <input type="number" class="form-control" id="year" placeholder="Enter year" required>
-                    <p id="msg" style="display: none; color: red;"></p> 
-                    <button type="submit" class="btn btn-primary mt-2">Show Summary</button>
-                </form>
-            
                 <canvas id="expenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
             </section>
             
@@ -228,6 +207,111 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
+
+    <script>
+        // Function to show only the selected section
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+        
+            // Show the selected section
+            document.getElementById(section).style.display = 'block';
+        
+            // Update active state in the sidebar
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
+        }
+        
+        // Show the "personal" section by default when the page loads
+        document.addEventListener("DOMContentLoaded", function () {
+            // Hide all sections initially
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+        
+            // Show the personal section
+            showSection('welcome'); 
+        });
+        document.querySelector("#personal form").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+        
+            // Collect the form data
+            const nameInput = document.querySelector("#personal input[placeholder='Expense Name']");
+            const amountInput = document.querySelector("#personal input[placeholder='Amount']");
+            const dateInput = document.querySelector("#personal input[type='date']");
+            const categoryInput = document.querySelector("#personal input[placeholder='Category']");
+        
+            // Now we extract the values of the input fields
+            const name = nameInput.value;
+            const amount = amountInput.value;
+            const date = dateInput.value;
+            const category = categoryInput.value;
+        
+            // Prepare the data to send to the server
+            const expenseData = {
+                name: name,
+                amount: parseFloat(amount), // Convert amount to a float
+                date: date,
+                category: category,
+            };
+        
+            // Clear the input fields immediately
+            nameInput.value = '';
+            amountInput.value = '';
+            dateInput.value = '';
+            categoryInput.value = '';
+        
+            // Get the message container element
+            const msgElement = document.getElementById('msg');
+            msgElement.textContent = 'Adding expense...';
+            msgElement.style.color = 'blue';
+        
+            // Send the data using the Fetch API
+            fetch('/add_personal_expense/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken') // CSRF token for security
+                },
+                body: JSON.stringify(expenseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display success or error message
+                if (data.success) {
+                    msgElement.textContent = 'Added successfully!';
+                    msgElement.style.color = 'green'; // Success message in green
+                } else {
+                    msgElement.textContent = 'Error: ' + data.message;
+                    msgElement.style.color = 'red'; // Error message in red
+                }
+            })
+            .catch(error => {
+                msgElement.textContent = 'An error occurred while adding the expense.';
+                msgElement.style.color = 'red'; // Error message in red
+                console.error(error);
+            });
+        });
+        
+        // Function to get the CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        </script>
 <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
@@ -236,5 +320,4 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
-
 </html>
