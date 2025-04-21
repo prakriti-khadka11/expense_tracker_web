@@ -3,7 +3,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import user_passes_test
-from .models import IndividualExpense
+from .models import IndividualExpense, GroupExpense
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -192,11 +192,6 @@ def reset_password_confirm(request, uidb64, token):
         messages.error(request, "The password reset link is invalid.")
         return redirect('login')
 
-
-    
-    
-
-
 def user_logout(request):
     """
     Logs out the user and redirects to the login page.
@@ -210,9 +205,10 @@ def user_logout(request):
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_expense_edit(request, expense_id, is_group):
     # Convert is_group to a boolean
-    is_group = True if is_group.lower() == 'true' else False
-
-    expense = get_object_or_404(IndividualExpense, id=expense_id)
+    if is_group:
+        expense = get_object_or_404(GroupExpense, id=expense_id)
+    else:
+        expense = get_object_or_404(IndividualExpense, id=expense_id)
 
     # Handle form submission (POST request)
     if request.method == "POST":
@@ -220,6 +216,13 @@ def admin_expense_edit(request, expense_id, is_group):
         expense.amount = request.POST.get("amount")
         expense.date = request.POST.get("date")
         expense.category = request.POST.get("category")
+          # Handle group expense members if it's a group expense
+        if is_group:
+            expense.member1 = request.POST.get("member1")
+            expense.member2 = request.POST.get("member2")
+            expense.member3 = request.POST.get("member3")
+            expense.member4 = request.POST.get("member4")
+            expense.member5 = request.POST.get("member5")
         expense.save()
 
         return redirect('admin_dashboard')  # Redirect to the dashboard after saving
@@ -231,7 +234,11 @@ def admin_expense_edit(request, expense_id, is_group):
 def admin_expense_delete(request, expense_id, is_group):
     # Convert is_group to a boolean
     is_group = True if is_group.lower() == 'true' else False
-    expense = get_object_or_404(IndividualExpense, id=expense_id)
+     # Delete the expense based on whether it's individual or group
+    if is_group:
+        expense = get_object_or_404(GroupExpense, id=expense_id)
+    else:
+        expense = get_object_or_404(IndividualExpense, id=expense_id)
 
     expense.delete()
     return redirect('admin_dashboard')
@@ -284,6 +291,29 @@ def custom_logout(request):
     logout(request)
     return redirect('login')
 
+def expense_summary(request):
+    # Get the name and year from request (via GET parameters)
+    user_name = request.GET.get('user_name')
+    year = request.GET.get('year')
+   
+    # Convert year to integer (if provided)
+    try:
+        year = int(year)
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Invalid year'}, status=400)
+
+    # Querying individual expenses filtered by name and year
+    expenses = IndividualExpense.objects.filter(name=user_name, date__year=year)
+
+    # Create a dictionary to store the expense data for each category
+    chart_data = {}
+    for expense in expenses:
+        if expense.category not in chart_data:
+            chart_data[expense.category] = 0
+        chart_data[expense.category] += float(expense.amount)
+
+    # Return the chart data in a format that can be used by Chart.js
+    return JsonResponse({'chart_data': chart_data})
 
 
 

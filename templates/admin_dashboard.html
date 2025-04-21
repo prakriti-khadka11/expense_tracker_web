@@ -209,6 +209,36 @@ footer {
                     {% endfor %}
                 </tbody>
             </table>
+        </div>  
+        <h3>Group Expenses</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Members</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in group_expenses %}
+                        <tr>
+                            <td>{{ expense.name }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.date }}</td>
+                            <td>{{ expense.category }}</td>
+                            <td>{{ expense.members }}</td>
+                            <td>
+                                <a href="{% url 'admin_expense_edit' expense_id=expense.id is_group='true' %}">Edit</a> |
+                                <a href="{% url 'admin_expense_delete' expense_id=expense.id is_group='true' %}">Delete</a>
+                            </td>  
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     
