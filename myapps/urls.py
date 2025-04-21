@@ -46,6 +46,7 @@ urlpatterns = [
     path('add_personal_expense/', views.add_personal_expense, name='add_personal_expense'),
 
     path('admin-logout/', views.custom_logout, name='admin_logout'),
+    path('summary/', views.expense_summary, name='expense_summary'),
  
 ]
 
