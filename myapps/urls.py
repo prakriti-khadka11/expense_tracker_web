@@ -44,6 +44,8 @@ urlpatterns = [
     path('admin-expense/delete/<int:expense_id>/<str:is_group>/', views.admin_expense_delete, name='admin_expense_delete'),
 
     path('add_personal_expense/', views.add_personal_expense, name='add_personal_expense'),
+
+    path('admin-logout/', views.custom_logout, name='admin_logout'),
  
 ]
 
