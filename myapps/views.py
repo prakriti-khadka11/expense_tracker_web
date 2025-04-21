@@ -268,6 +268,21 @@ def add_personal_expense(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
+def custom_logout(request):
+    """
+    Logs out the currently authenticated user and redirects to the login page.
+
+    This view function calls Django's built-in `logout` method to end the user's session.
+    After logging out, the user is redirected to the login page.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponseRedirect: A redirect response to the login page.
+    """
+    logout(request)
+    return redirect('login')
 
 
 
