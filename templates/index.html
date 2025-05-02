@@ -13,7 +13,7 @@
         body {
             background-color: #e8f5e9;
             font-family: Arial, sans-serif;
-            padding-top: 90px; 
+            padding-top: 50px; 
         }
     
         /* Navbar Styles */
@@ -80,6 +80,9 @@
             padding: 12px 20px;
             color: #333;
             transition: background 0.3s;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 5px; /* ✅ Add spacing */
+            border-radius: 4px;
         }
     
         .sidebar .nav-link:hover,
@@ -159,10 +162,14 @@
                     <a class="nav-link" href="#" onclick="showSection('personal')">📌 Personal Expenses</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showSection('group')">👥 Group Expenses</a>
+                    <a class="nav-link" href="#" onclick="showSection('group')">👥 Group Expenses</a> 
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showSection('summary')">📊 Summary</a>
+                    <a class="nav-link" href="#" onclick="showSection('summary')">📊 Personal Summary</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="showSection('group-summary')">📊 Group Summary</a>
+                  
                 </li>
             </ul>
         </nav>
@@ -220,10 +227,15 @@
             </section>
 
 
-
             <!-- Summary Section -->
             <section id="summary" class="content-section">
                 <h2>Expense Summary</h2>
+                <form id="expense-form" class="expense-form">
+                    <input type="text" class="form-control" id="user-name" placeholder="Enter your name" required>
+                    <input type="number" class="form-control" id="year" placeholder="Enter year" required>
+                    <p id="msg" style="display: none; color: red;"></p> 
+                    <button type="submit" class="btn btn-primary mt-2">Show Summary</button>
+                </form>
                 <canvas id="expenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
             </section>
             
@@ -336,6 +348,61 @@
             return cookieValue;
         }
         
+
+    document.querySelector("#expense-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get the user name and year entered in the form
+    const userName = document.querySelector("#user-name").value;
+    const year = document.querySelector("#year").value;
+
+    // Clear the previous chart
+    if (window.chart) {
+        window.chart.destroy();
+    }
+
+    // Fetch the expense summary data from the server with year as a parameter
+    fetch(`/summary/?user_name=${userName}&year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            // Prepare chart labels and data
+            const categories = Object.keys(data.chart_data);
+            const amounts = Object.values(data.chart_data);
+
+            // Get the canvas element
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+
+            // Create a new Pie Chart
+            window.chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: amounts,
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF5733'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': Rs.' + tooltipItem.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching expense summary:', error);
+        });
+});
         </script>
 <!-- Footer -->
     <footer class="footer">
