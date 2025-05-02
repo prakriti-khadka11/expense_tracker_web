@@ -198,11 +198,34 @@
                 </form>
             </section>
 
+            
+            <!-- Group Creation Section -->
+            <section id="group-section" style="margin: 30px auto; max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">Create a New Group</h2>
+                <form id="group-form" style="display: flex; flex-direction: column; gap: 15px;">
+                    <input
+            type="text"
+            id="group-name"
+            placeholder="Enter group name"
+            required
+            style="padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;"
+        />
+        <button
+            type="submit"
+            style="padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;"
+        >
+        Create Group
+        </button>
+    </form>
+    <p id="group-message" style="margin-top: 10px; color: green; text-align: center;"></p>
+</section>
+
             <!-- Group Expenses Section -->
-            <section id="group" class="content-section">
-                <h2>Group Expenses</h2>
-                <p id="msg" style="display: none;"></p> <!-- Message Container -->     
+            <section id="group" class="content-section" style="margin: 40px auto; max-width: 600px;">
+                <h2 style="text-align: center;">Group Expenses</h2>
+                <p id="msg" style="display: none; text-align: center; margin-top: 10px; color: red;"></p>
             </section>
+
 
             <!-- Summary Section -->
             <section id="summary" class="content-section">
