@@ -246,22 +246,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
 
     <script>
-        // Function to show only the selected section
-        function showSection(section) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(sec => {
-                sec.style.display = 'none';
-            });
-        
-            // Show the selected section
-            document.getElementById(section).style.display = 'block';
-        
-            // Update active state in the sidebar
-            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-            document.querySelector(`[onclick="showSection('${section}')"]`).classList.add('active');
+function showSection(section) {
+    // Hide all content sections
+    document.querySelectorAll('.content-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+
+    // Show the selected section
+    document.getElementById(section).style.display = 'block';
+
+    // Remove 'active' from all links, add to selected one
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        if (link.getAttribute('data-section') === section) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
-        
-        // Show the "personal" section by default when the page loads
+    });
+}
+// Show the "personal" section by default when the page loads
         document.addEventListener("DOMContentLoaded", function () {
             // Hide all sections initially
             document.querySelectorAll('.content-section').forEach(sec => {
@@ -347,32 +350,35 @@
             }
             return cookieValue;
         }
-        
+document.querySelector("#expense-form").addEventListener("submit", function(event) {
+    event.preventDefault();
 
-    document.querySelector("#expense-form").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent form submission
-
-    // Get the user name and year entered in the form
     const userName = document.querySelector("#user-name").value;
     const year = document.querySelector("#year").value;
+    const msgElement = document.querySelector("#summary #msg");
+    msgElement.style.display = 'none';
 
-    // Clear the previous chart
     if (window.chart) {
         window.chart.destroy();
     }
 
-    // Fetch the expense summary data from the server with year as a parameter
     fetch(`/summary/?user_name=${userName}&year=${year}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Something went wrong');
+                });
+            }
+            return response.json();
+        })
         .then(data => {
-            // Prepare chart labels and data
             const categories = Object.keys(data.chart_data);
             const amounts = Object.values(data.chart_data);
+            const percentages = data.percentages;
+            window.chartPercentages = percentages;
 
-            // Get the canvas element
             const ctx = document.getElementById('expenseChart').getContext('2d');
 
-            // Create a new Pie Chart
             window.chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -390,8 +396,11 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': Rs.' + tooltipItem.raw.toFixed(2);
+                                label: function(context) {
+                                    const label = context.label;
+                                    const value = context.raw.toFixed(2);
+                                    const percentage = window.chartPercentages?.[label]?.toFixed(2) || '0.00';
+                                    return `${label}: Rs.${value} (${percentage}%)`;
                                 }
                             }
                         }
@@ -400,10 +409,12 @@
             });
         })
         .catch(error => {
-            console.error('Error fetching expense summary:', error);
+            msgElement.style.display = 'block';
+            msgElement.style.color = 'red';
+            msgElement.textContent = error.message;
         });
 });
-        </script>
+</script>
 <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">

@@ -290,32 +290,49 @@ def custom_logout(request):
     """
     logout(request)
     return redirect('login')
-
+   
 def expense_summary(request):
-    # Get the name and year from request (via GET parameters)
+    """
+    Retrieves and summarizes individual expenses for a specific user and year.
+
+    This view function expects two GET parameters:
+        - user_name (str): The name of the user whose expenses should be retrieved.
+        - year (int): The year for which to filter the expenses.
+
+    The function filters expenses by the provided user and year, aggregates the total 
+    amount per category, and calculates each category's percentage of the total expenses.
+
+    Returns:
+        JsonResponse: A JSON response containing:
+            - 'chart_data': A dictionary with categories as keys and total expense amounts as values.
+            - 'percentages': A dictionary with categories as keys and their percentage of total expenses.
+
+    Error Responses:
+        - 400 Bad Request: If the 'year' parameter is missing or not a valid integer.
+        - 404 Not Found: If no expenses are found for the given user and year.
+    """
     user_name = request.GET.get('user_name')
     year = request.GET.get('year')
-   
-    # Convert year to integer (if provided)
+
     try:
         year = int(year)
     except (ValueError, TypeError):
         return JsonResponse({'error': 'Invalid year'}, status=400)
 
-    # Querying individual expenses filtered by name and year
     expenses = IndividualExpense.objects.filter(name=user_name, date__year=year)
 
-    # Create a dictionary to store the expense data for each category
+    if not expenses.exists():
+        return JsonResponse({'error': 'No data found for the given user or year.'}, status=404)
+
     chart_data = {}
+    total = 0
     for expense in expenses:
-        if expense.category not in chart_data:
-            chart_data[expense.category] = 0
-        chart_data[expense.category] += float(expense.amount)
+        chart_data[expense.category] = chart_data.get(expense.category, 0) + float(expense.amount)
+        total += float(expense.amount)
 
-    # Return the chart data in a format that can be used by Chart.js
-    return JsonResponse({'chart_data': chart_data})
+    percentages = {
+        category: (amount / total) * 100 for category, amount in chart_data.items()
+    }
 
-
-
-   
+    return JsonResponse({'chart_data': chart_data, 'percentages': percentages})
 
