@@ -9,15 +9,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
     <style>
-
-        /* CSS styles */
         body {
             background-color: #e8f5e9;
             font-family: Arial, sans-serif;
             padding-top: 50px; 
         }
-    
-        /* Navbar Styles */
         .navbar-custom {
             background-color: #2e7d32;
             color: white;
@@ -30,14 +26,12 @@
             width: 100%;
             z-index: 1000;
         }
-    
         .navbar-container {
             display: flex;
             justify-content: space-between;
             width: 100%;
             align-items: center;
         }
-
         .navbar-brand {
             color: white;
             font-size: 1.3rem;
@@ -46,7 +40,6 @@
             text-align: center;
             width: 100%;
         }
-    
         .navbar-title {
             color: white;
             font-size: 1.5rem;
@@ -54,20 +47,16 @@
             flex-grow: 1;
             text-align: center;
         }
-    
         .navbar-link {
             color: white;
             font-size: 1.5rem;
             text-decoration: none;
             text-decoration: underline;
         }
-    
         .navbar-link:hover {
             text-decoration: underline;
             color: black;
         }
-    
-        /* Sidebar */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -75,7 +64,6 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             position: fixed;
         }
-    
         .sidebar .nav-link {
             font-size: 18px;
             padding: 12px 20px;
@@ -85,20 +73,15 @@
             margin-bottom: 5px;
             border-radius: 4px;
         }
-    
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background-color:#2e7d32;
             color: white;
         }
-    
-        /* Main Content */
         .content {
             margin-left: 270px;
             width: calc(100% - 270px);
         }
-    
-        /* Sections */
         .content-section {
             display: none;
             background: white;
@@ -108,18 +91,14 @@
             max-width: 700px;
             margin: 20px auto;
         }
-    
-        /* Form */
         .expense-form .form-control {
             margin-bottom: 15px;
             padding: 10px;
             font-size: 1rem;
         }
-    
         .expense-form button {
             width: 100%;
         }
-    
         .btn-primary {
             background-color: #388e3c;
             border: none;
@@ -128,31 +107,25 @@
             padding: 10px;
             width: 100%;
         }
-
         .btn-primary:hover {
             background-color:#2e7d32;
         }
-
-        /* Member Input Styles */
         .member-input-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-bottom: 15px;
         }
-
         .member-input-container input {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
             border-radius: 5px;
         }
-
         .member-input-buttons {
             display: flex;
             gap: 10px;
         }
-
         .member-input-buttons button {
             background-color: #388e3c;
             color: white;
@@ -162,20 +135,15 @@
             font-size: 0.9rem;
             cursor: pointer;
         }
-
         .member-input-buttons button:hover {
             background-color: #2e7d32;
         }
-
         .member-input-buttons button.remove {
             background-color: #dc3545;
         }
-
         .member-input-buttons button.remove:hover {
             background-color: #c82333;
         }
-
-        /* Footer Styles */
         footer {
             position: fixed;
             bottom: 0;
@@ -185,8 +153,6 @@
             text-align: center;
             padding: 10px 0;
         }
-
-        /* Responsive Design */
         @media (max-width: 768px) {
             .content {
                 margin-left: 0;
@@ -211,11 +177,9 @@
             }
         }
     </style>
-    
 </head>
 
 <body>
-
     <!-- Navbar -->
     <nav class="navbar navbar-custom">
         <div class="navbar-container">
@@ -236,7 +200,8 @@
                     <a class="nav-link" href="#" onclick="showSection('group')">👥 Group Expenses</a> 
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="showSection('summary')">📊 Personal Summary</ amplification                    </li>
+                    <a class="nav-link" href="#" onclick="showSection('summary')">📊 Personal Summary</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="showSection('group-summary')">📊 Group Summary</a>
                 </li>
@@ -278,7 +243,7 @@
                         <input type="text" id="group-name" class="form-control" placeholder="Enter group name" required>
                         <div id="member-list">
                             <div class="member-input-container">
-                                <input type="text" class="form-control" placeholder="Enter member's name" required>
+                                <input type="text" class="form-control" placeholder="Enter member name" required>
                                 <div class="member-input-buttons">
                                     <button type="button" onclick="addMemberInput()">Add Member</button>
                                 </div>
@@ -304,9 +269,9 @@
                 </div>
             </section>
 
-            <!-- Summary Section -->
+            <!-- Personal Summary Section -->
             <section id="summary" class="content-section">
-                <h2>Expense Summary</h2>
+                <h2>Personal Expense Summary</h2>
                 <form id="expense-form" class="expense-form">
                     <input type="text" class="form-control" id="user-name" placeholder="Enter your name" required>
                     <input type="number" class="form-control" id="year" placeholder="Enter year" required>
@@ -315,7 +280,19 @@
                 </form>
                 <canvas id="expenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
             </section>
-            
+
+            <!-- Group Summary Section -->
+            <section id="group-summary" class="content-section">
+                <h2>Group Expense Summary</h2>
+                <form id="group-summary-form" class="expense-form">
+                    <input type="text" class="form-control" id="group-name" placeholder="Enter group name ">
+                    <input type="text" class="form-control" id="expense-name" placeholder="Enter expense name ">
+                    <input type="number" class="form-control" id="group-summary-year" placeholder="Enter year" value="2025" required>
+                    <p id="group-summary-msg" style="display: none; color: red;"></p>
+                    <button type="submit" class="btn btn-primary mt-2">Show Group Summary</button>
+                </form>
+                <canvas id="groupExpenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
+            </section>
         </div>
     </div>
 
@@ -324,7 +301,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Show/Hide Sections
         function showSection(section) {
             document.querySelectorAll('.content-section').forEach(sec => {
                 sec.style.display = 'none';
@@ -333,14 +309,11 @@
             document.querySelectorAll('.sidebar .nav-link').forEach(link => {
                 link.classList.toggle('active', link.getAttribute('onclick') === `showSection('${section}')`);
             });
-
-            // Load groups when group section is shown
             if (section === 'group') {
                 loadGroups();
             }
         }
 
-        // Show welcome section by default
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll('.content-section').forEach(sec => {
                 sec.style.display = 'none';
@@ -348,7 +321,6 @@
             showSection('welcome');
         });
 
-        // Get CSRF token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -364,7 +336,6 @@
             return cookieValue;
         }
 
-        // Personal Expense Form Submission
         document.querySelector("#personal form").addEventListener("submit", function(event) {
             event.preventDefault(); 
             const nameInput = document.querySelector("#personal input[placeholder='Expense Name']");
@@ -413,15 +384,14 @@
             });
         });
 
-        // Summary Form Submission
         document.querySelector("#expense-form").addEventListener("submit", function(event) {
             event.preventDefault();
             const userName = document.querySelector("#user-name").value;
             const year = document.querySelector("#year").value;
             const msgElement = document.querySelector("#summary #msg");
             msgElement.style.display = 'none';
-            if (window.chart) {
-                window.chart.destroy();
+            if (window.personalChart) {
+                window.personalChart.destroy();
             }
             fetch(`/summary/?user_name=${userName}&year=${year}`)
                 .then(response => {
@@ -436,9 +406,9 @@
                     const categories = Object.keys(data.chart_data);
                     const amounts = Object.values(data.chart_data);
                     const percentages = data.percentages;
-                    window.chartPercentages = percentages;
+                    window.personalChartPercentages = percentages;
                     const ctx = document.getElementById('expenseChart').getContext('2d');
-                    window.chart = new Chart(ctx, {
+                    window.personalChart = new Chart(ctx, {
                         type: 'pie',
                         data: {
                             labels: categories,
@@ -456,7 +426,7 @@
                                         label: function(context) {
                                             const label = context.label;
                                             const value = context.raw.toFixed(2);
-                                            const percentage = window.chartPercentages?.[label]?.toFixed(2) || '0.00';
+                                            const percentage = window.personalChartPercentages?.[label]?.toFixed(2) || '0.00';
                                             return `${label}: Rs.${value} (${percentage}%)`;
                                         }
                                     }
@@ -472,13 +442,80 @@
                 });
         });
 
-        // Dynamic Member Input for Group Creation
+        document.querySelector("#group-summary-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const groupName = document.querySelector("#group-name").value;
+            const expenseName = document.querySelector("#expense-name").value;
+            const year = document.querySelector("#group-summary-year").value;
+            const msgElement = document.querySelector("#group-summary #group-summary-msg");
+            msgElement.style.display = 'none';
+            loadGroupSummary(groupName, expenseName, year);
+        });
+
+        function loadGroupSummary(groupName, expenseName, year) {
+            const username = "{{ request.user.username }}";
+            const msgElement = document.querySelector("#group-summary #group-summary-msg");
+            if (window.groupChart) {
+                window.groupChart.destroy();
+            }
+            let url = `/group_summary/?year=${year}&username=${username}`;
+            if (groupName) url += `&group_name=${encodeURIComponent(groupName)}`;
+            if (expenseName) url += `&expense_name=${encodeURIComponent(expenseName)}`;
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Something went wrong');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const categories = Object.keys(data.chart_data);
+                    const amounts = Object.values(data.chart_data);
+                    const percentages = data.percentages;
+                    window.groupChartPercentages = percentages;
+                    const ctx = document.getElementById('groupExpenseChart').getContext('2d');
+                    window.groupChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: categories,
+                            datasets: [{
+                                data: amounts,
+                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF5733'],
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label;
+                                            const value = context.raw.toFixed(2);
+                                            const percentage = window.groupChartPercentages?.[label]?.toFixed(2) || '0.00';
+                                            return `${label}: Rs.${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    msgElement.style.display = 'block';
+                    msgElement.style.color = 'red';
+                    msgElement.textContent = error.message;
+                });
+        }
+
         function addMemberInput() {
             const memberList = document.getElementById('member-list');
             const newMemberInput = document.createElement('div');
             newMemberInput.className = 'member-input-container';
             newMemberInput.innerHTML = `
-                <input type="text" class="form-control" placeholder="Enter member username" required>
+                <input type="text" class="form-control" placeholder="Enter member name" required>
                 <div class="member-input-buttons">
                     <button type="button" onclick="addMemberInput()">Add Member</button>
                     <button type="button" class="remove" onclick="this.parentElement.parentElement.remove()">Remove</button>
@@ -487,7 +524,6 @@
             memberList.appendChild(newMemberInput);
         }
 
-        // Load Existing Groups
         function loadGroups() {
             const groupSelect = document.getElementById('group-select');
             groupSelect.innerHTML = '<option value="">Select a group</option>';
@@ -508,64 +544,60 @@
                 });
         }
 
-        // Group Creation Form Submission
         document.getElementById('group-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const groupName = document.getElementById('group-name').value;
-    const memberInputs = document.querySelectorAll('#member-list input');
-    const members = Array.from(memberInputs).map(input => input.value).filter(val => val.trim() !== '');
-    const msgElement = document.getElementById('group-msg');
+            event.preventDefault();
+            const groupName = document.getElementById('group-name').value;
+            const memberInputs = document.querySelectorAll('#member-list input');
+            const members = Array.from(memberInputs).map(input => input.value).filter(val => val.trim() !== '');
+            const msgElement = document.getElementById('group-msg');
+            if (members.length === 0) {
+                msgElement.style.display = 'block';
+                msgElement.textContent = 'Please add at least one member.';
+                msgElement.style.color = 'red';
+                return;
+            }
+            const groupData = {
+                name: groupName,
+                members: members
+            };
+            msgElement.style.display = 'block';
+            msgElement.textContent = 'Creating group...';
+            msgElement.style.color = 'blue';
+            fetch('/create_group/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(groupData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    msgElement.textContent = 'Group created successfully!';
+                    msgElement.style.color = 'green';
+                    document.getElementById('group-form').reset();
+                    document.getElementById('member-list').innerHTML = `
+                        <div class="member-input-container">
+                            <input type="text" class="form-control" placeholder="Enter member name" required>
+                            <div class="member-input-buttons">
+                                <button type="button" onclick="addMemberInput()">Add Member</button>
+                            </div>
+                        </div>
+                    `;
+                    loadGroups();
+                } else {
+                    msgElement.textContent = 'Error: ' + data.message;
+                    msgElement.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                msgElement.textContent = 'An error occurred while creating the group.';
+                msgElement.style.color = 'red';
+                console.error(error);
+            });
+        });
 
-    if (members.length === 0) {
-        msgElement.style.display = 'block';
-        msgElement.textContent = 'Please add at least one member.';
-        msgElement.style.color = 'red';
-        return;
-    }
-
-    const groupData = {
-        name: groupName,
-        members: members
-    };
-    msgElement.style.display = 'block';
-    msgElement.textContent = 'Creating group...';
-    msgElement.style.color = 'blue';
-    fetch('/create_group/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify(groupData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            msgElement.textContent = 'Group created successfully!';
-            msgElement.style.color = 'green';
-            document.getElementById('group-form').reset();
-            document.getElementById('member-list').innerHTML = `
-                <div class="member-input-container">
-                    <input type="text" class="form-control" placeholder="Enter member name" required>
-                    <div class="member-input-buttons">
-                        <button type="button" onclick="addMemberInput()">Add Member</button>
-                    </div>
-                </div>
-            `;
-            loadGroups();
-        } else {
-            msgElement.textContent = 'Error: ' + data.message;
-            msgElement.style.color = 'red';
-        }
-    })
-    .catch(error => {
-        msgElement.textContent = 'An error occurred while creating the group.';
-        msgElement.style.color = 'red';
-        console.error(error);
-    });
-});
-
-        // Group Expense Form Submission
         document.getElementById('group-expense-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const groupId = document.getElementById('group-select').value;
@@ -580,7 +612,9 @@
                 date: date,
                 category: category
             };
-            const msgElement = document.getElementById('group-msg');
+            const msgElement = document
+
+.getElementById('group-msg');
             msgElement.style.display = 'block';
             msgElement.textContent = 'Adding and splitting expense...';
             msgElement.style.color = 'blue';
@@ -595,7 +629,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    msgElement.textContent = `Expense added and split! Each member owes Rs.${data.split_amount.toFixed(2)}`;
+                    msgElement.textContent = `${data.message} Each member owes Rs.${data.split_amount.toFixed(2)}.`;
                     msgElement.style.color = 'green';
                     document.getElementById('group-expense-form').reset();
                     document.getElementById('group-select').value = '';
