@@ -21,6 +21,21 @@ import logging
 logger = logging.getLogger(__name__)
 
 def register(request):
+    """
+    Handles user registration.
+
+    If the request method is POST, it processes the submitted registration form.
+    If valid, it saves the new user, displays a success message, and redirects to login.
+    If the form is invalid, an error message is shown and the form is re-rendered.
+    For GET requests, an empty registration form is displayed.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponse: Rendered register page with the form
+    - HttpResponseRedirect: Redirects to the login page after successful registration
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -34,6 +49,21 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 def user_login(request):
+    """
+    Handles user login.
+
+    If the request method is POST, it authenticates the user using the provided credentials.
+    On successful authentication, logs the user in and redirects to the index page.
+    If authentication fails, an error message is shown and redirects back to the login page.
+    For GET requests, the login page is rendered.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponse: Rendered login page
+    - HttpResponseRedirect: Redirects to index page after successful login
+    """
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -47,9 +77,33 @@ def user_login(request):
     return render(request, 'login.html')
 
 def index(request):
+    """
+    Displays the main landing page after login.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponse: Rendered index page
+    """
     return render(request, 'index.html')
 
 def admin_login(request):
+    """
+    Handles admin login.
+
+    For POST requests, this view authenticates the submitted username and password.
+    If the user exists and is a superuser, they are logged in and redirected to the admin dashboard.
+    If not, an error message is rendered on the login page.
+    For GET requests, the login form is displayed.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponse: Rendered admin login form or error page
+    - HttpResponseRedirect: Redirects to admin_dashboard on successful login
+    """
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -62,10 +116,37 @@ def admin_login(request):
     return render(request, "admin_login.html")
 
 def is_superuser(user):
+    """
+    Checks if the user is authenticated and is a superuser.
+
+    This function is used as a custom test for the @user_passes_test decorator.
+
+    Parameters:
+    - user: User object
+
+    Returns:
+    - bool: True if user is authenticated and a superuser, else False
+    """
     return user.is_authenticated and user.is_superuser
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_dashboard(request):
+    """
+    Displays the admin dashboard view.
+
+    Accessible only by superusers. Shows:
+    - All personal expenses
+    - All group expenses
+    - All registered users
+
+    Logs a message with the counts of each type of data loaded.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponse: Rendered admin dashboard page with relevant data
+    """
     personal_expenses = IndividualExpense.objects.all()
     group_expenses = GroupExpense.objects.all()
     users = User.objects.all()
@@ -133,15 +214,29 @@ def reset_password_confirm(request, uidb64, token):
         return redirect('login')
 
 def user_logout(request):
+    """
+    Logs out the current user and redirects them to the login page.
+
+    This view is typically used to end a user's session, clearing any authentication data.
+
+    Parameters:
+    - request: HttpRequest object
+
+    Returns:
+    - HttpResponseRedirect: Redirects to the login page
+    """
     logout(request)
     return redirect('login')
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_expense_edit(request, expense_id, is_group):
+    is_group = is_group.lower() == 'true'  # Fix: convert to boolean
+
     if is_group:
         expense = get_object_or_404(GroupExpense, id=expense_id)
     else:
         expense = get_object_or_404(IndividualExpense, id=expense_id)
+
     if request.method == "POST":
         expense.name = request.POST.get("name")
         expense.amount = request.POST.get("amount")
@@ -157,6 +252,7 @@ def admin_expense_edit(request, expense_id, is_group):
                 expense.members.add(member)
         expense.save()
         return redirect('admin_dashboard')
+
     return render(request, 'admin_expense_edit.html', {'expense': expense, 'is_group': is_group})
 
 @user_passes_test(is_superuser, login_url='admin_login')
@@ -328,3 +424,34 @@ def add_group_expense(request):
             logger.error(f"Error adding group expense: {str(e)}")
             return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+def admin_user_delete(request, user_id):
+    """
+    Deletes a non-superuser account by its user ID.
+
+    This view allows an admin (superuser) to delete a user account.
+    Superuser accounts cannot be deleted through this view to prevent
+    accidental or malicious loss of admin access.
+
+    Parameters:
+    - request: The HTTP request object.
+    - user_id (int): The ID of the user to be deleted.
+
+    Behavior:
+    - If the user does not exist, raises a 404 error.
+    - If the user is a superuser, shows an error message and redirects back to the dashboard.
+    - Otherwise, deletes the user, displays a success message, and redirects to the dashboard.
+
+    Returns:
+    - HttpResponseRedirect to the admin dashboard.
+    """
+    user = get_object_or_404(User, id=user_id)
+
+    # Prevent superusers from deleting themselves
+    if user.is_superuser:
+        messages.error(request, "You cannot delete a superuser.")
+        return redirect('admin_dashboard')
+
+    user.delete()
+    messages.success(request, "User deleted successfully.")
+    return redirect('admin_dashboard')
