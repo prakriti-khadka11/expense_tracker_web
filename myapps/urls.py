@@ -16,6 +16,7 @@ urlpatterns = [
     path('add_personal_expense/', views.add_personal_expense, name='add_personal_expense'),
     path('admin-logout/', views.custom_logout, name='admin_logout'),
     path('summary/', views.expense_summary, name='expense_summary'),
+    path('group_summary/', views.group_summary, name='group_summary'),
     path('create_group/', views.create_group, name='create_group'),
     path('get_groups/', views.get_groups, name='get_groups'),
     path('add_group_expense/', views.add_group_expense, name='add_group_expense'),
