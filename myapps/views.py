@@ -15,6 +15,10 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.template.loader import render_to_string
 from django.urls import reverse
 from .utils import account_activation_token
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 def register(request):
     if request.method == 'POST':
@@ -63,9 +67,12 @@ def is_superuser(user):
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_dashboard(request):
     personal_expenses = IndividualExpense.objects.all()
+    group_expenses = GroupExpense.objects.all()
     users = User.objects.all()
+    logger.info(f"Admin dashboard accessed. Found {personal_expenses.count()} personal expenses and {group_expenses.count()} group expenses.")
     context = {
         'personal_expenses': personal_expenses,
+        'group_expenses': group_expenses,
         'users': users,
     }
     return render(request, 'admin_dashboard.html', context)
@@ -173,8 +180,10 @@ def add_personal_expense(request):
                 category=data.get('category'),
             )
             expense.save()
+            logger.info(f"Personal expense '{expense.name}' added: Rs.{expense.amount}, {expense.date}, {expense.category}")
             return JsonResponse({'success': True, 'message': 'Personal expense added successfully!'})
         except Exception as e:
+            logger.error(f"Error adding personal expense: {str(e)}")
             return JsonResponse({'success': False, 'message': f'Error adding personal expense: {str(e)}'})
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
@@ -200,6 +209,49 @@ def expense_summary(request):
     percentages = {category: (amount / total) * 100 for category, amount in chart_data.items()}
     return JsonResponse({'chart_data': chart_data, 'percentages': percentages})
 
+def group_summary(request):
+    username = request.GET.get('username')
+    year = request.GET.get('year')
+    group_name = request.GET.get('group_name')
+    expense_name = request.GET.get('expense_name')
+    
+    try:
+        year = int(year)
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Invalid year'}, status=400)
+    
+    try:
+        member = Member.objects.get(name=username)
+    except Member.DoesNotExist:
+        return JsonResponse({'error': 'User not found in any groups.'}, status=404)
+    
+    # Start with base query
+    expenses = GroupExpense.objects.filter(members=member, date__year=year)
+    
+    # Apply filters if provided
+    if group_name:
+        expenses = expenses.filter(group__name__iexact=group_name)
+    if expense_name:
+        expenses = expenses.filter(name__iexact=expense_name)
+    
+    if not expenses.exists():
+        return JsonResponse({'error': 'No group expenses found for the given criteria.'}, status=404)
+    
+    chart_data = {}
+    total = 0
+    for expense in expenses:
+        member_count = expense.members.count()
+        if member_count > 0:
+            split_amount = float(expense.amount) / member_count
+            chart_data[expense.category] = chart_data.get(expense.category, 0) + split_amount
+            total += split_amount
+    
+    if total == 0:
+        return JsonResponse({'error': 'No group expenses found for the given criteria.'}, status=404)
+    
+    percentages = {category: (amount / total) * 100 for category, amount in chart_data.items()}
+    return JsonResponse({'chart_data': chart_data, 'percentages': percentages})
+
 def create_group(request):
     if request.method == 'POST':
         try:
@@ -210,14 +262,19 @@ def create_group(request):
                 return JsonResponse({'success': False, 'message': 'Group name is required'}, status=400)
             if not member_names:
                 return JsonResponse({'success': False, 'message': 'At least one member is required'}, status=400)
+            if request.user.is_authenticated and request.user.username not in member_names:
+                member_names.append(request.user.username)
             group = Group.objects.create(name=group_name)
             for name in member_names:
                 member, _ = Member.objects.get_or_create(name=name)
                 group.members.add(member)
+            logger.info(f"Group '{group.name}' created with members: {', '.join(member_names)}")
             return JsonResponse({'success': True, 'message': 'Group created successfully', 'group_id': group.id})
         except json.JSONDecodeError:
+            logger.error("Invalid JSON data in create_group")
             return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
         except Exception as e:
+            logger.error(f"Error creating group: {str(e)}")
             return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
@@ -225,6 +282,7 @@ def get_groups(request):
     if request.method == 'GET':
         groups = Group.objects.all()
         group_data = [{'id': group.id, 'name': group.name} for group in groups]
+        logger.info(f"Fetched {len(group_data)} groups")
         return JsonResponse({'success': True, 'groups': group_data})
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
@@ -238,10 +296,12 @@ def add_group_expense(request):
             date = data.get('date')
             category = data.get('category')
             if not all([group_id, name, amount, date, category]):
+                logger.error("Missing required fields in add_group_expense")
                 return JsonResponse({'success': False, 'message': 'All fields are required'}, status=400)
             group = get_object_or_404(Group, id=group_id)
             member_count = group.members.count()
             if member_count == 0:
+                logger.error(f"Group '{group.name}' has no members")
                 return JsonResponse({'success': False, 'message': 'Group has no members'}, status=400)
             split_amount = float(amount) / member_count
             expense = GroupExpense.objects.create(
@@ -255,13 +315,16 @@ def add_group_expense(request):
             for member in group.members.all():
                 expense.members.add(member)
             expense.save()
+            logger.info(f"Group expense '{name}' added to '{group.name}': Rs.{amount}, {date}, {category}, Members: {', '.join([m.name for m in group.members.all()])}")
             return JsonResponse({
                 'success': True,
-                'message': 'Expense added and split successfully!',
+                'message': f'Expense added to {group.name} and split successfully!',
                 'split_amount': split_amount
             })
         except json.JSONDecodeError:
+            logger.error("Invalid JSON data in add_group_expense")
             return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
         except Exception as e:
+            logger.error(f"Error adding group expense: {str(e)}")
             return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
