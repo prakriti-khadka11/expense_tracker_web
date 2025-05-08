@@ -20,4 +20,5 @@ urlpatterns = [
     path('create_group/', views.create_group, name='create_group'),
     path('get_groups/', views.get_groups, name='get_groups'),
     path('add_group_expense/', views.add_group_expense, name='add_group_expense'),
+    path('admin-user/delete/<int:user_id>/', views.admin_user_delete, name='admin_user_delete'),
 ]
