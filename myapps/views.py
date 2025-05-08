@@ -21,6 +21,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 def register(request):
+    """
+    Handles user registration using UserRegisterForm.
+    Renders the registration page on GET, and processes form submission on POST.
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -34,6 +38,10 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 def user_login(request):
+    """
+    Authenticates and logs in the user.
+    Renders login page on GET, processes login credentials on POST.
+    """
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -47,9 +55,16 @@ def user_login(request):
     return render(request, 'login.html')
 
 def index(request):
+    """
+    Renders the index (homepage) template.
+    """
     return render(request, 'index.html')
 
 def admin_login(request):
+    """
+    Authenticates admin (superuser) and redirects to admin dashboard if valid.
+    Renders admin login page on GET.
+    """
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -62,10 +77,16 @@ def admin_login(request):
     return render(request, "admin_login.html")
 
 def is_superuser(user):
+    """
+    Checks if the user is authenticated and is a superuser.
+    """
     return user.is_authenticated and user.is_superuser
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_dashboard(request):
+    """
+    Displays admin dashboard with all personal and group expenses, and users.
+    """
     personal_expenses = IndividualExpense.objects.all()
     group_expenses = GroupExpense.objects.all()
     users = User.objects.all()
@@ -78,6 +99,10 @@ def admin_dashboard(request):
     return render(request, 'admin_dashboard.html', context)
 
 def request_password_reset(request):
+    """
+    Handles password reset request.
+    Sends an email with password reset link if user email is found.
+    """
     if request.method == "POST":
         email = request.POST.get("email")
         user = User.objects.filter(email=email).first()
@@ -107,6 +132,10 @@ def request_password_reset(request):
     return render(request, "reset-password.html")
 
 def reset_password_confirm(request, uidb64, token):
+    """
+    Confirms password reset using UID and token.
+    Allows user to enter new password if token is valid.
+    """
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
@@ -133,15 +162,24 @@ def reset_password_confirm(request, uidb64, token):
         return redirect('login')
 
 def user_logout(request):
+    """
+    Logs out the user and redirects to login page.
+    """
     logout(request)
     return redirect('login')
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_expense_edit(request, expense_id, is_group):
+    """
+    Allows admin to edit individual or group expense details.
+    """
+    is_group = is_group.lower() == 'true'
+
     if is_group:
         expense = get_object_or_404(GroupExpense, id=expense_id)
     else:
         expense = get_object_or_404(IndividualExpense, id=expense_id)
+
     if request.method == "POST":
         expense.name = request.POST.get("name")
         expense.amount = request.POST.get("amount")
@@ -157,10 +195,14 @@ def admin_expense_edit(request, expense_id, is_group):
                 expense.members.add(member)
         expense.save()
         return redirect('admin_dashboard')
+
     return render(request, 'admin_expense_edit.html', {'expense': expense, 'is_group': is_group})
 
 @user_passes_test(is_superuser, login_url='admin_login')
 def admin_expense_delete(request, expense_id, is_group):
+    """
+    Allows admin to delete an individual or group expense.
+    """
     is_group = is_group.lower() == 'true'
     if is_group:
         expense = get_object_or_404(GroupExpense, id=expense_id)
@@ -170,6 +212,9 @@ def admin_expense_delete(request, expense_id, is_group):
     return redirect('admin_dashboard')
 
 def add_personal_expense(request):
+    """
+    Adds a personal expense via a JSON POST request.
+    """
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -188,10 +233,17 @@ def add_personal_expense(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 
 def custom_logout(request):
+    """
+    Logs out user and redirects to login page.
+    """
     logout(request)
     return redirect('login')
 
 def expense_summary(request):
+    """
+    Returns JSON summary of user's individual expenses for a given year,
+    grouped by category with percentage breakdown.
+    """
     user_name = request.GET.get('user_name')
     year = request.GET.get('year')
     try:
@@ -210,6 +262,10 @@ def expense_summary(request):
     return JsonResponse({'chart_data': chart_data, 'percentages': percentages})
 
 def group_summary(request):
+    """
+    Returns JSON summary of group expenses involving a user,
+    filtered by group name, expense name, and year.
+    """
     username = request.GET.get('username')
     year = request.GET.get('year')
     group_name = request.GET.get('group_name')
@@ -225,10 +281,8 @@ def group_summary(request):
     except Member.DoesNotExist:
         return JsonResponse({'error': 'User not found in any groups.'}, status=404)
     
-    # Start with base query
     expenses = GroupExpense.objects.filter(members=member, date__year=year)
     
-    # Apply filters if provided
     if group_name:
         expenses = expenses.filter(group__name__iexact=group_name)
     if expense_name:
@@ -253,6 +307,10 @@ def group_summary(request):
     return JsonResponse({'chart_data': chart_data, 'percentages': percentages})
 
 def create_group(request):
+    """
+    Creates a group with provided member names via JSON POST request.
+    Adds the authenticated user as a member if not already included.
+    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -279,6 +337,9 @@ def create_group(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
 def get_groups(request):
+    """
+    Returns a list of all groups in the system as JSON.
+    """
     if request.method == 'GET':
         groups = Group.objects.all()
         group_data = [{'id': group.id, 'name': group.name} for group in groups]
@@ -287,6 +348,9 @@ def get_groups(request):
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
 def add_group_expense(request):
+    """
+    Adds an expense to a group, splits the amount among members.
+    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -328,3 +392,17 @@ def add_group_expense(request):
             logger.error(f"Error adding group expense: {str(e)}")
             return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=400)
     return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
+def admin_user_delete(request, user_id):
+    """
+    Allows admin to delete a user unless the user is a superuser.
+    """
+    user = get_object_or_404(User, id=user_id)
+
+    if user.is_superuser:
+        messages.error(request, "You cannot delete a superuser.")
+        return redirect('admin_dashboard')
+
+    user.delete()
+    messages.success(request, "User deleted successfully.")
+    return redirect('admin_dashboard')
