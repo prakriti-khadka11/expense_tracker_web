@@ -9,16 +9,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
     <style>
-        /* CSS styles */
         body {
             background-color: #e8f5e9;
             font-family: Arial, sans-serif;
             padding-top: 50px; 
         }
-    
-        /* Navbar Styles */
         .navbar-custom {
-            background-color: #2e7d32; /* Same as footer color */
+            background-color: #2e7d32;
             color: white;
             height: 60px;
             font-weight: bold;
@@ -29,14 +26,12 @@
             width: 100%;
             z-index: 1000;
         }
-    
         .navbar-container {
             display: flex;
             justify-content: space-between;
             width: 100%;
             align-items: center;
         }
-
         .navbar-brand {
             color: white;
             font-size: 1.3rem;
@@ -45,7 +40,6 @@
             text-align: center;
             width: 100%;
         }
-    
         .navbar-title {
             color: white;
             font-size: 1.5rem;
@@ -53,20 +47,16 @@
             flex-grow: 1;
             text-align: center;
         }
-    
         .navbar-link {
             color: white;
             font-size: 1.5rem;
             text-decoration: none;
             text-decoration: underline;
         }
-    
         .navbar-link:hover {
             text-decoration: underline;
             color: black;
         }
-    
-        /* Sidebar */
         .sidebar {
             width: 250px;
             height: 100vh;
@@ -74,61 +64,86 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
             position: fixed;
         }
-    
         .sidebar .nav-link {
             font-size: 18px;
             padding: 12px 20px;
             color: #333;
             transition: background 0.3s;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 5px; /* ✅ Add spacing */
+            margin-bottom: 5px;
             border-radius: 4px;
         }
-    
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
             background-color:#2e7d32;
             color: white;
         }
-    
-        /* Main Content */
         .content {
             margin-left: 270px;
             width: calc(100% - 270px);
         }
-    
-        /* Sections */
         .content-section {
             display: none;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 700px;
             margin: 20px auto;
         }
-    
-        /* Form */
         .expense-form .form-control {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 1rem;
         }
-    
         .expense-form button {
             width: 100%;
         }
-    
         .btn-primary {
             background-color: #388e3c;
             border: none;
             border-radius: 20px;
             font-size: 1.1rem;
+            padding: 10px;
             width: 100%;
         }
-
         .btn-primary:hover {
             background-color:#2e7d32;
         }
-        /* Footer Styles */
+        .member-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .member-input-container input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+        .member-input-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .member-input-buttons button {
+            background-color: #388e3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .member-input-buttons button:hover {
+            background-color: #2e7d32;
+        }
+        .member-input-buttons button.remove {
+            background-color: #dc3545;
+        }
+        .member-input-buttons button.remove:hover {
+            background-color: #c82333;
+        }
         footer {
             position: fixed;
             bottom: 0;
@@ -138,18 +153,38 @@
             text-align: center;
             padding: 10px 0;
         }
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                width: 100%;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+            .content-section {
+                max-width: 90%;
+            }
+            .member-input-container input {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+            .member-input-buttons button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
-    
 </head>
 
 <body>
-
     <!-- Navbar -->
     <nav class="navbar navbar-custom">
         <div class="navbar-container">
             <h2>💰 Expenses Tracker </h2> 
             <a href="{% url 'user_logout' %}" class="navbar-link">Logout</a>  
-          
         </div>
     </nav>
 
@@ -169,7 +204,6 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" onclick="showSection('group-summary')">📊 Group Summary</a>
-                  
                 </li>
             </ul>
         </nav>
@@ -179,8 +213,7 @@
             <header class="text-center">
             </header>
 
-            <!-- welcome section -->
-
+            <!-- Welcome Section -->
             <section id="welcome" class="content-section">
                 <img src="/static/images/image2.jpg" class="img-fluid" alt="Sample image">
             </section>
@@ -198,38 +231,47 @@
                 </form>
             </section>
 
-            
-            <!-- Group Creation Section -->
-            <section id="group-section" style="margin: 30px auto; max-width: 600px; padding: 20px; border: 1px solid #ccc; border-radius: 10px;">
-                <h2 style="text-align: center; margin-bottom: 20px;">Create a New Group</h2>
-                <form id="group-form" style="display: flex; flex-direction: column; gap: 15px;">
-                    <input
-            type="text"
-            id="group-name"
-            placeholder="Enter group name"
-            required
-            style="padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;"
-        />
-        <button
-            type="submit"
-            style="padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;"
-        >
-        Create Group
-        </button>
-    </form>
-    <p id="group-message" style="margin-top: 10px; color: green; text-align: center;"></p>
-</section>
-
             <!-- Group Expenses Section -->
-            <section id="group" class="content-section" style="margin: 40px auto; max-width: 600px;">
+            <section id="group" class="content-section">
                 <h2 style="text-align: center;">Group Expenses</h2>
-                <p id="msg" style="display: none; text-align: center; margin-top: 10px; color: red;"></p>
+                <p id="group-msg" style="text-align: center; margin-top: 10px; display: none;"></p>
+
+                <!-- Create Group Form -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="margin-bottom: 15px;">Create a New Group</h3>
+                    <form id="group-form" class="expense-form">
+                        <input type="text" id="group-name" class="form-control" placeholder="Enter group name" required>
+                        <div id="member-list">
+                            <div class="member-input-container">
+                                <input type="text" class="form-control" placeholder="Enter member name" required>
+                                <div class="member-input-buttons">
+                                    <button type="button" onclick="addMemberInput()">Add Member</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Create Group</button>
+                    </form>
+                </div>
+
+                <!-- Add Group Expense Form -->
+                <div>
+                    <h3 style="margin-bottom: 15px;">Add Group Expense</h3>
+                    <form id="group-expense-form" class="expense-form">
+                        <select id="group-select" class="form-control" required>
+                            <option value="">Select a group</option>
+                        </select>
+                        <input type="text" class="form-control" placeholder="Expense Name" required>
+                        <input type="number" class="form-control" placeholder="Total Amount" required>
+                        <input type="date" class="form-control" required>
+                        <input type="text" class="form-control" placeholder="Category" required>
+                        <button type="submit" class="btn btn-primary mt-3">Add and Split Expense</button>
+                    </form>
+                </div>
             </section>
 
-
-            <!-- Summary Section -->
+            <!-- Personal Summary Section -->
             <section id="summary" class="content-section">
-                <h2>Expense Summary</h2>
+                <h2>Personal Expense Summary</h2>
                 <form id="expense-form" class="expense-form">
                     <input type="text" class="form-control" id="user-name" placeholder="Enter your name" required>
                     <input type="number" class="form-control" id="year" placeholder="Enter year" required>
@@ -238,104 +280,47 @@
                 </form>
                 <canvas id="expenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
             </section>
-            
+
+            <!-- Group Summary Section -->
+            <section id="group-summary" class="content-section">
+                <h2>Group Expense Summary</h2>
+                <form id="group-summary-form" class="expense-form">
+                    <input type="text" class="form-control" id="group-name" placeholder="Enter group name ">
+                    <input type="text" class="form-control" id="expense-name" placeholder="Enter expense name ">
+                    <input type="number" class="form-control" id="group-summary-year" placeholder="Enter year" value="2025" required>
+                    <p id="group-summary-msg" style="display: none; color: red;"></p>
+                    <button type="submit" class="btn btn-primary mt-2">Show Group Summary</button>
+                </form>
+                <canvas id="groupExpenseChart" style="max-width: 600px; margin: auto; display: block;"></canvas>
+            </section>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-function showSection(section) {
-    // Hide all content sections
-    document.querySelectorAll('.content-section').forEach(sec => {
-        sec.style.display = 'none';
-    });
-
-    // Show the selected section
-    document.getElementById(section).style.display = 'block';
-
-    // Remove 'active' from all links, add to selected one
-    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-        if (link.getAttribute('data-section') === section) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
-}
-// Show the "personal" section by default when the page loads
-        document.addEventListener("DOMContentLoaded", function () {
-            // Hide all sections initially
+        function showSection(section) {
             document.querySelectorAll('.content-section').forEach(sec => {
                 sec.style.display = 'none';
             });
-        
-            // Show the personal section
-            showSection('welcome'); 
-        });
-        document.querySelector("#personal form").addEventListener("submit", function(event) {
-            event.preventDefault(); 
-        
-            // Collect the form data
-            const nameInput = document.querySelector("#personal input[placeholder='Expense Name']");
-            const amountInput = document.querySelector("#personal input[placeholder='Amount']");
-            const dateInput = document.querySelector("#personal input[type='date']");
-            const categoryInput = document.querySelector("#personal input[placeholder='Category']");
-        
-            // Now we extract the values of the input fields
-            const name = nameInput.value;
-            const amount = amountInput.value;
-            const date = dateInput.value;
-            const category = categoryInput.value;
-        
-            // Prepare the data to send to the server
-            const expenseData = {
-                name: name,
-                amount: parseFloat(amount), // Convert amount to a float
-                date: date,
-                category: category,
-            };
-        
-            // Clear the input fields immediately
-            nameInput.value = '';
-            amountInput.value = '';
-            dateInput.value = '';
-            categoryInput.value = '';
-        
-            // Get the message container element
-            const msgElement = document.getElementById('msg');
-            msgElement.textContent = 'Adding expense...';
-            msgElement.style.color = 'blue';
-        
-            // Send the data using the Fetch API
-            fetch('/add_personal_expense/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken') // CSRF token for security
-                },
-                body: JSON.stringify(expenseData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Display success or error message
-                if (data.success) {
-                    msgElement.textContent = 'Added successfully!';
-                    msgElement.style.color = 'green'; // Success message in green
-                } else {
-                    msgElement.textContent = 'Error: ' + data.message;
-                    msgElement.style.color = 'red'; // Error message in red
-                }
-            })
-            .catch(error => {
-                msgElement.textContent = 'An error occurred while adding the expense.';
-                msgElement.style.color = 'red'; // Error message in red
-                console.error(error);
+            document.getElementById(section).style.display = 'block';
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('onclick') === `showSection('${section}')`);
             });
+            if (section === 'group') {
+                loadGroups();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.style.display = 'none';
+            });
+            showSection('welcome');
         });
-        
-        // Function to get the CSRF token from cookies
+
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -350,77 +335,322 @@ function showSection(section) {
             }
             return cookieValue;
         }
-document.querySelector("#expense-form").addEventListener("submit", function(event) {
-    event.preventDefault();
 
-    const userName = document.querySelector("#user-name").value;
-    const year = document.querySelector("#year").value;
-    const msgElement = document.querySelector("#summary #msg");
-    msgElement.style.display = 'none';
-
-    if (window.chart) {
-        window.chart.destroy();
-    }
-
-    fetch(`/summary/?user_name=${userName}&year=${year}`)
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || 'Something went wrong');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            const categories = Object.keys(data.chart_data);
-            const amounts = Object.values(data.chart_data);
-            const percentages = data.percentages;
-            window.chartPercentages = percentages;
-
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-
-            window.chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        data: amounts,
-                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF5733'],
-                    }]
+        document.querySelector("#personal form").addEventListener("submit", function(event) {
+            event.preventDefault(); 
+            const nameInput = document.querySelector("#personal input[placeholder='Expense Name']");
+            const amountInput = document.querySelector("#personal input[placeholder='Amount']");
+            const dateInput = document.querySelector("#personal input[type='date']");
+            const categoryInput = document.querySelector("#personal input[placeholder='Category']");
+            const name = nameInput.value;
+            const amount = amountInput.value;
+            const date = dateInput.value;
+            const category = categoryInput.value;
+            const expenseData = {
+                name: name,
+                amount: parseFloat(amount),
+                date: date,
+                category: category,
+            };
+            const msgElement = document.getElementById('msg');
+            msgElement.textContent = 'Adding expense...';
+            msgElement.style.color = 'blue';
+            fetch('/add_personal_expense/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
+                body: JSON.stringify(expenseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    msgElement.textContent = 'Added successfully!';
+                    msgElement.style.color = 'green';
+                    nameInput.value = '';
+                    amountInput.value = '';
+                    dateInput.value = '';
+                    categoryInput.value = '';
+                } else {
+                    msgElement.textContent = 'Error: ' + data.message;
+                    msgElement.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                msgElement.textContent = 'An error occurred while adding the expense.';
+                msgElement.style.color = 'red';
+                console.error(error);
+            });
+        });
+
+        document.querySelector("#expense-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const userName = document.querySelector("#user-name").value;
+            const year = document.querySelector("#year").value;
+            const msgElement = document.querySelector("#summary #msg");
+            msgElement.style.display = 'none';
+            if (window.personalChart) {
+                window.personalChart.destroy();
+            }
+            fetch(`/summary/?user_name=${userName}&year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Something went wrong');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const categories = Object.keys(data.chart_data);
+                    const amounts = Object.values(data.chart_data);
+                    const percentages = data.percentages;
+                    window.personalChartPercentages = percentages;
+                    const ctx = document.getElementById('expenseChart').getContext('2d');
+                    window.personalChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: categories,
+                            datasets: [{
+                                data: amounts,
+                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF5733'],
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label;
-                                    const value = context.raw.toFixed(2);
-                                    const percentage = window.chartPercentages?.[label]?.toFixed(2) || '0.00';
-                                    return `${label}: Rs.${value} (${percentage}%)`;
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label;
+                                            const value = context.raw.toFixed(2);
+                                            const percentage = window.personalChartPercentages?.[label]?.toFixed(2) || '0.00';
+                                            return `${label}: Rs.${value} (${percentage}%)`;
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-            });
-        })
-        .catch(error => {
-            msgElement.style.display = 'block';
-            msgElement.style.color = 'red';
-            msgElement.textContent = error.message;
+                    });
+                })
+                .catch(error => {
+                    msgElement.style.display = 'block';
+                    msgElement.style.color = 'red';
+                    msgElement.textContent = error.message;
+                });
         });
-});
-</script>
-<!-- Footer -->
+
+        document.querySelector("#group-summary-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const groupName = document.querySelector("#group-name").value;
+            const expenseName = document.querySelector("#expense-name").value;
+            const year = document.querySelector("#group-summary-year").value;
+            const msgElement = document.querySelector("#group-summary #group-summary-msg");
+            msgElement.style.display = 'none';
+            loadGroupSummary(groupName, expenseName, year);
+        });
+
+        function loadGroupSummary(groupName, expenseName, year) {
+            const username = "{{ request.user.username }}";
+            const msgElement = document.querySelector("#group-summary #group-summary-msg");
+            if (window.groupChart) {
+                window.groupChart.destroy();
+            }
+            let url = `/group_summary/?year=${year}&username=${username}`;
+            if (groupName) url += `&group_name=${encodeURIComponent(groupName)}`;
+            if (expenseName) url += `&expense_name=${encodeURIComponent(expenseName)}`;
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.error || 'Something went wrong');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const categories = Object.keys(data.chart_data);
+                    const amounts = Object.values(data.chart_data);
+                    const percentages = data.percentages;
+                    window.groupChartPercentages = percentages;
+                    const ctx = document.getElementById('groupExpenseChart').getContext('2d');
+                    window.groupChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: categories,
+                            datasets: [{
+                                data: amounts,
+                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#FF5733'],
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label;
+                                            const value = context.raw.toFixed(2);
+                                            const percentage = window.groupChartPercentages?.[label]?.toFixed(2) || '0.00';
+                                            return `${label}: Rs.${value} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    msgElement.style.display = 'block';
+                    msgElement.style.color = 'red';
+                    msgElement.textContent = error.message;
+                });
+        }
+
+        function addMemberInput() {
+            const memberList = document.getElementById('member-list');
+            const newMemberInput = document.createElement('div');
+            newMemberInput.className = 'member-input-container';
+            newMemberInput.innerHTML = `
+                <input type="text" class="form-control" placeholder="Enter member name" required>
+                <div class="member-input-buttons">
+                    <button type="button" onclick="addMemberInput()">Add Member</button>
+                    <button type="button" class="remove" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                </div>
+            `;
+            memberList.appendChild(newMemberInput);
+        }
+
+        function loadGroups() {
+            const groupSelect = document.getElementById('group-select');
+            groupSelect.innerHTML = '<option value="">Select a group</option>';
+            fetch('/get_groups/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.groups) {
+                        data.groups.forEach(group => {
+                            const option = document.createElement('option');
+                            option.value = group.id;
+                            option.textContent = group.name;
+                            groupSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading groups:', error);
+                });
+        }
+
+        document.getElementById('group-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const groupName = document.getElementById('group-name').value;
+            const memberInputs = document.querySelectorAll('#member-list input');
+            const members = Array.from(memberInputs).map(input => input.value).filter(val => val.trim() !== '');
+            const msgElement = document.getElementById('group-msg');
+            if (members.length === 0) {
+                msgElement.style.display = 'block';
+                msgElement.textContent = 'Please add at least one member.';
+                msgElement.style.color = 'red';
+                return;
+            }
+            const groupData = {
+                name: groupName,
+                members: members
+            };
+            msgElement.style.display = 'block';
+            msgElement.textContent = 'Creating group...';
+            msgElement.style.color = 'blue';
+            fetch('/create_group/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(groupData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    msgElement.textContent = 'Group created successfully!';
+                    msgElement.style.color = 'green';
+                    document.getElementById('group-form').reset();
+                    document.getElementById('member-list').innerHTML = `
+                        <div class="member-input-container">
+                            <input type="text" class="form-control" placeholder="Enter member name" required>
+                            <div class="member-input-buttons">
+                                <button type="button" onclick="addMemberInput()">Add Member</button>
+                            </div>
+                        </div>
+                    `;
+                    loadGroups();
+                } else {
+                    msgElement.textContent = 'Error: ' + data.message;
+                    msgElement.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                msgElement.textContent = 'An error occurred while creating the group.';
+                msgElement.style.color = 'red';
+                console.error(error);
+            });
+        });
+
+        document.getElementById('group-expense-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const groupId = document.getElementById('group-select').value;
+            const name = document.querySelector("#group-expense-form input[placeholder='Expense Name']").value;
+            const amount = document.querySelector("#group-expense-form input[placeholder='Total Amount']").value;
+            const date = document.querySelector("#group-expense-form input[type='date']").value;
+            const category = document.querySelector("#group-expense-form input[placeholder='Category']").value;
+            const expenseData = {
+                group_id: groupId,
+                name: name,
+                amount: parseFloat(amount),
+                date: date,
+                category: category
+            };
+            const msgElement = document
+
+.getElementById('group-msg');
+            msgElement.style.display = 'block';
+            msgElement.textContent = 'Adding and splitting expense...';
+            msgElement.style.color = 'blue';
+            fetch('/add_group_expense/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(expenseData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    msgElement.textContent = `${data.message} Each member owes Rs.${data.split_amount.toFixed(2)}.`;
+                    msgElement.style.color = 'green';
+                    document.getElementById('group-expense-form').reset();
+                    document.getElementById('group-select').value = '';
+                } else {
+                    msgElement.textContent = 'Error: ' + data.message;
+                    msgElement.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                msgElement.textContent = 'An error occurred while adding the expense.';
+                msgElement.style.color = 'red';
+                console.error(error);
+            });
+        });
+    </script>
+
+    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; Copyright © 2024. All rights reserved.</p>
+            <p>© Copyright © 2024. All rights reserved.</p>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
