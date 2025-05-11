@@ -222,13 +222,14 @@
             <section id="personal" class="content-section">
                 <h2>Personal Expenses</h2>
                 <p id="msg"></p>
-                <form class="expense-form">
-                    <input type="text" class="form-control" placeholder="Enter your name" required>
+                <form id="personal-expense-form" class="expense-form">
+                    <input type="text" class="form-control" placeholder="Expense Name" required>
                     <input type="number" class="form-control" placeholder="Amount" required>
                     <input type="date" class="form-control" required>
-                    <input type="text" class="form-control" placeholder="Enter expense name" required>
+                    <input type="text" class="form-control" placeholder="Category" required>
                     <button type="submit" class="btn btn-primary mt-2">Add Personal Expense</button>
                 </form>
+                
             </section>
 
             <!-- Group Expenses Section -->
@@ -336,12 +337,15 @@
             return cookieValue;
         }
 
-        document.querySelector("#personal form").addEventListener("submit", function(event) {
+            document.querySelector("#personal-expense-form").addEventListener("submit", function(event) {
+
             event.preventDefault(); 
             const nameInput = document.querySelector("#personal input[placeholder='Expense Name']");
             const amountInput = document.querySelector("#personal input[placeholder='Amount']");
             const dateInput = document.querySelector("#personal input[type='date']");
             const categoryInput = document.querySelector("#personal input[placeholder='Category']");
+            console.log(nameInput, amountInput, dateInput, categoryInput);
+
             const name = nameInput.value;
             const amount = amountInput.value;
             const date = dateInput.value;
